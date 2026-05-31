@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LingoSprint - Language Learner</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --primary: #22c55e;
+            --primary-dark: #16a34a;
+            --accent: #3b82f6;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --wrong: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: '-apple-system', BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        /* Top Stats Dashboard */
+        .dashboard {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .stat-box h3 {
+            font-size: 1.25rem;
+            color: var(--text);
+        }
+
+        .stat-box p {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        /* Category Tabs Selector */
+        .tabs {
+            display: flex;
+            background: #e2e8f0;
+            padding: 0.25rem;
+            border-radius: 0.75rem;
+            gap: 0.25rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.6rem;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--surface);
+            color: var(--text);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Main Workspace Card */
+        .main-card {
+            background: var(--surface);
+            border-radius: 1.25rem;
+            border: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+        }
+
+        .card-header {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--accent);
+            letter-spacing: 0.05em;
+        }
+
+        .foreign-word {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text);
+            margin: 1rem 0 0.25rem 0;
+        }
+
+        .pronunciation-hint {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .english-translation {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        /* Audio Button */
+        .audio-btn {
+            background: #eff6ff;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-top: 1rem;
+            color: var(--accent);
+            transition: transform 0.2s;
+        }
+
+        .audio-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* Quiz Layout Option Buttons */
+        .options-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .option-btn {
+            width: 100%;
+            padding: 1rem;
+            text-align: left;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--text-light);
+        }
+
+        .option-btn.correct {
+            background: #f0fdf4;
+            border-color: var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .option-btn.wrong {
+            background: #fef2f2;
+            border-color: var(--wrong);
+            color: var(--wrong);
+        }
+
+        /* Bottom Controls Row */
+        .bottom-actions {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.85rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: center;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: var(--text);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .mode-toggle {
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="dashboard">
+            <div class="stat-box">
+                <h3 id="stat-lang">Spanish</h3>
+                <p>Language</p>
+            </div>
+            <div class="stat-box">
+                <h3 id="stat-xp">0</h3>
+                <p>Total XP</p>
+            </div>
+            <div class="stat-box">
+                <h3 id="stat-streak">1 🔥</h3>
+                <p>Day Streak</p>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchCategory('vocabulary', this)">Vocabulary</button>
+            <button class="tab-btn" onclick="switchCategory('phrases', this)">Phrases</button>
+            <button class="tab-btn" onclick="switchCategory('grammar', this)">Grammar</button>
+        </div>
+
+        <div class="main-card" id="card-workspace">
+            </div>
+
+        <div class="mode-toggle" id="mode-changer" onclick="toggleMode()">Switch to Practice Quiz Mode</div>
+    </div>
+
+    <script>
+        // Structured Educational Syllabus Database (Spanish Context Example)
+        const dataset = {
+            vocabulary: [
+                { foreign: "Hola", english: "Hello", hint: "[oh-lah]", speechCode: "es-ES" },
+                { foreign: "Gracias", english: "Thank you", hint: "[grah-syahs]", speechCode: "es-ES" },
+                { foreign: "Perro", english: "Dog", hint: "[peh-rroh]", speechCode: "es-ES" },
+                { foreign: "Manzana", english: "Apple", hint: "[mahn-thah-nah]", speechCode: "es-ES" }
+            ],
+            phrases: [
+                { foreign: "¿Cómo estás?", english: "How are you?", hint: "[koh-moh ehs-tahs]", speechCode: "es-ES" },
+                { foreign: "Buenos días", english: "Good morning", hint: "[bweh-nohs dee-ahs]", speechCode: "es-ES" },
+                { foreign: "Me gusta el café", english: "I like coffee", hint: "[meh goos-tah ehl kah-feh]", speechCode: "es-ES" }
+            ],
+            grammar: [
+                { foreign: "Yo soy / Tu eres", english: "I am / You are (Permanent state - Ser)", hint: "[yoh soy / too eh-rehs]", speechCode: "es-ES" },
+                { foreign: "El gato negro", english: "The black cat (Noun before adjective placement)", hint: "[ehl gah-toh neh-groh]", speechCode: "es-ES" }
+            ]
+        };
+
+        // Core App Runtime Tracking State Variables
+        let currentCategory = 'vocabulary';
+        let currentMode = 'lesson'; // Options: 'lesson' or 'quiz'
+        let currentIndex = 0;
+        let xpScore = parseInt(localStorage.getItem('lingo_xp')) || 0;
+        let dayStreak = parseInt(localStorage.getItem('lingo_streak')) || 1;
+
+        // Workspace elements reference tracking 
+        const workspace = document.getElementById('card-workspace');
+
+        // Initial launch setup 
+        function initApp() {
+            document.getElementById('stat-xp').textContent = xpScore;
+            document.getElementById('stat-streak').textContent = `${dayStreak} 🔥`;
+            renderCurrentView();
+        }
+
+        // Category Tab Engine
+        function switchCategory(category, element) {
+            currentCategory = category;
+            currentIndex = 0;
+            
+            // Toggle active visual class on buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            
+            renderCurrentView();
+        }
+
+        // Toggle Study Mode Engine
+        function toggleMode() {
+            if (currentMode === 'lesson') {
+                currentMode = 'quiz';
+                document.getElementById('mode-changer').textContent = "Switch to Interactive Lesson Mode";
+            } else {
+                currentMode = 'lesson';
+                document.getElementById('mode-changer').textContent = "Switch to Practice Quiz Mode";
+            }
+            currentIndex = 0;
+            renderCurrentView();
+        }
+
+        // Main Rendering Switch Board
+        function renderCurrentView() {
+            const currentDeck = dataset[currentCategory];
+            
+            // Safety bounds fallback check
+            if(currentIndex >= currentDeck.length) {
+                currentIndex = 0;
+            }
+
+            if (currentMode === 'lesson') {
+                renderLessonCard(currentDeck[currentIndex]);
+            } else {
+                renderQuizCard(currentDeck[currentIndex], currentDeck);
+            }
+        }
+
+        // View 1: Lesson Presentation Builder
+        function renderLessonCard(item) {
+            workspace.innerHTML = `
+                <div class="card-header">${currentCategory} • Flash Lesson</div>
+                <div>
+                    <div class="foreign-word">${item.foreign}</div>
+                    <div class="pronunciation-hint">${item.hint}</div>
+                    <button class="audio-btn" onclick="speakText('${item.foreign}', '${item.speechCode}')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                    </button>
+                </div>
+                <div class="english-translation">${item.english}</div>
+                <div class="bottom-actions">
+                    <button class="btn btn-secondary" onclick="moveTrack(-1)">Back</button>
+                    <button class="btn btn-primary" onclick="moveTrack(1); awardXP(5);">Got it! (+5 XP)</button>
+                </div>
+            `;
+        }
+
+        // View 2: Quiz Presentation Builder
+        function renderQuizCard(item, currentDeck) {
+            // Build Multiple Choice options pool dynamically 
+            let options = [item.english];
+            
+            // Grab alternate decoy answers from the dataset
+            let filteredDecoys = currentDeck
+                .filter(d => d.english !== item.english)
+                .map(d => d.english);
+            
+            // Shuffle and extract decoys
+            filteredDecoys.sort(() => 0.5 - Math.random());
+            while(options.length < 3 && filteredDecoys.length > 0) {
+                options.push(filteredDecoys.pop());
+            }
+            
+            // Shuffle alternative configurations positions
+            options.sort(() => 0.5 - Math.random());
+
+            workspace.innerHTML = `
+                <div class="card-header">${currentCategory} • Interactive Quiz</div>
+                <div style="width:100%;">
+                    <div class="foreign-word" style="font-size: 1.85rem;">Translate: "${item.foreign}"</div>
+                    <div class="options-container">
+                        ${options.map(opt => `<button class="option-btn" onclick="evaluateAnswer(this, '${opt}', '${item.english}')">${opt}</button>`).join('')}
+                    </div>
+                </div>
+                <div class="bottom-actions" style="margin-top:1rem;">
+                    <button class="btn btn-secondary" style="width:100%" onclick="moveTrack(1)">Skip Question →</button>
+                </div>
+            `;
+        }
+
+        // Track Index Controller Navigation
+        function moveTrack(direction) {
+            const currentDeck = dataset[currentCategory];
+            currentIndex += direction;
+            
+            if (currentIndex >= currentDeck.length) {
+                currentIndex = 0; // Loop seamlessly
+            } else if (currentIndex < 0) {
+                currentIndex = currentDeck.length - 1;
+            }
+            renderCurrentView();
+        }
+
+        // Native System TTS Speech Engine Integration
+        function speakText(text, speechLocale) {
+            if ('speechSynthesis' in window) {
+                // Cancel ongoing playback queues first
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = speechLocale;
+                utterance.rate = 0.85; // Slightly slower pacing for language comprehension
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Audio synthesis is not natively supported on this phone browser configuration.");
+            }
+        }
+
+        // Quiz Selection Accuracy Engine Handler
+        function evaluateAnswer(clickedBtn, selectedValue, correctValue) {
+            const optionButtons = document.querySelectorAll('.option-btn');
+            // Disable further interactive selecting clicks during animation execution
+            optionButtons.forEach(btn => btn.style.pointerEvents = 'none');
+
+            if (selectedValue === correctValue) {
+                clickedBtn.classList.add('correct');
+                awardXP(20); // Award larger XP payouts on accurate testing checks
+                setTimeout(() => {
+                    moveTrack(1);
+                }, 1000);
+            } else {
+                clickedBtn.classList.add('wrong');
+                // Highlight correct answer transparently to user
+                optionButtons.forEach(btn => {
+                    if(btn.textContent === correctValue) btn.classList.add('correct');
+                });
+                // Delay view change to let user examine mistakes
+                setTimeout(() => {
+                    moveTrack(1);
+                }, 1800);
+            }
+        }
+
+        // Local Storage Gamified Progress Sync System
+        function awardXP(amount) {
+            xpScore += amount;
+            localStorage.setItem('lingo_xp', xpScore);
+            document.getElementById('stat-xp').textContent = xpScore;
+        }
+
+        // Bootstrap App
+        initApp();
+    </script>
+</body>
+</html>
